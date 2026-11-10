@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIMB Niaga OCTO Clone</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 412px;
+            background: linear-gradient(180deg, #ED1C24 0%, #AF1419 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-top: 10px;
+        }
+
+        .logo { 
+            height: 28px; 
+            filter: brightness(0) invert(1); 
+            object-fit: contain;
+        }
+
+        .top-icons { 
+            display: flex; 
+            gap: 15px; 
+            font-size: 18px;
+        }
+
+        /* Welcome Text */
+        .welcome h1 {
+            font-size: 26px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 25px;
+        }
+
+        /* Search Bar */
+        .search-box {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 12px 15px 12px 45px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        /* Menu Grid */
+        .menu-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .menu-link {
+            flex: 1;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            height: 170px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, background 0.2s;
+            backdrop-filter: blur(10px);
+        }
+
+        .card:active { 
+            transform: scale(0.96); 
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .card img {
+            width: 75px;
+            height: 75px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        .card-label {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: white;
+            color: #ED1C24;
+            text-align: center;
+            padding: 12px 0;
+            font-weight: bold;
+            font-size: 13px;
+            border-radius: 0 0 20px 20px;
+        }
+
+        /* Mascot */
+        .char-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+            flex-grow: 1;
+        }
+
+        .octo-img { 
+            width: 210px; 
+            margin-bottom: 10px;
+        }
+
+        .btn-virtual {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            backdrop-filter: blur(5px);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* FAB */
+        .fab {
+            position: absolute;
+            bottom: 85px;
+            right: 20px;
+            background: white;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            font-size: 24px;
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            background: rgba(0, 0, 0, 0.25);
+            margin: auto -20px -20px -20px;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">>
+             
+        <div class="top-icons">
+            <span>🔒</span> <span>🔍</span> <span>☰</span>
+        </div>
+    </div>
+
+    <div class="welcome">
+        <h1>Hai, Selamat Datang di CIMB Niaga</h1>
+        <p>Ada yang bisa kami bantu hari ini?</p>
+    </div>
+
+    <div class="search-box">
+        <input type="text" placeholder="Cari kebutuhan Anda di sini">
+    </div>
+
+    <div class="menu-row">
+        <a href="Octo.html" class="menu-link">
+            <div class="card">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfn-BaWHLa7Bn_E9cSwpAOB5o7F9lx1Jd1XDKxo60iPmNNMck5BF7URms&s=10" alt="Octo Mobile">
+                <div class="card-label">Octo Mobile</div>
+            </div>
+        </a>
+
+        <a href="kart.html" class="menu-link">
+            <div class="card">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5MTjuFIKnOFYdi51w8oSYTZ_GXsYzCZUSiQJfzN246RLurz1inFhH5OM&s=10" alt="Kartu Kredit">
+                <div class="card-label">Kartu Kredit</div>
+            </div>
+        </a>
+    </div>
+
+    <div class="char-section">
+        <img src="https://www.cimbniaga.co.id/content/dam/cimb/revamp/OctopusCIMB.gif" class="octo-img" alt="Octo Mascot">
+        <button class="btn-virtual">Virtual CIMB Niaga</button>
+    </div>
+
+    <div class="fab">
+        💬
+    </div>
+
+    <div class="bottom-nav">
+        <span>Kami hadir untuk mendukung transaksi Anda.</span>
+        <span>❯</span>
+    </div>
